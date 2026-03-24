@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HTB Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ══════════════ TOP BAR ══════════════ -->
+  <header class="topbar">
+    <div class="logo">
+      <div class="logo-hex">
+        <svg viewBox="0 0 16 16"><path d="M8 0L15 4V12L8 16L1 12V4L8 0ZM8 2.5L3 5.5V10.5L8 13.5L13 10.5V5.5L8 2.5Z"/></svg>
+      </div>
+      <div>
+        <div class="logo-text">HTB//DASHBOARD</div>
+        <div class="logo-sub">PENTESTER WORKSTATION</div>
+      </div>
+    </div>
+
+    <div id="active-target-pill" class="active-target-pill" style="display:none">
+      <span class="dot"></span>
+      <span id="active-target-badge"></span>
+    </div>
+
+    <div class="topbar-right">
+      <span class="badge bgr" style="font-family:var(--mono);font-size:11px" id="session-time"></span>
+      <button class="theme-btn" id="btn-theme" onclick="App.toggleTheme()">
+        <span id="theme-icon">☀</span> LIGHT
+      </button>
+    </div>
+  </header>
+
+  <!-- ══════════════ SIDEBAR ══════════════ -->
+  <nav class="sidebar">
+    <div class="sidebar-section">Workspace</div>
+    <div class="nav-item active" data-page="machines">
+      <span class="nav-icon">⬡</span> Machines
+      <span class="nav-badge" id="nav-badge-machines">0</span>
+    </div>
+    <div class="nav-item" data-page="recon">
+      <span class="nav-icon">🔍</span> Recon
+    </div>
+    <div class="nav-item" data-page="payloads">
+      <span class="nav-icon">⚡</span> Payloads
+    </div>
+
+    <div class="sidebar-section">Intel</div>
+    <div class="nav-item" data-page="loot">
+      <span class="nav-icon">🗄</span> Loot Vault
+      <span class="nav-badge" id="nav-badge-loot">0</span>
+    </div>
+    <div class="nav-item" data-page="netmap">
+      <span class="nav-icon">🗺</span> Net Map
+    </div>
+    <div class="nav-item" data-page="writeup">
+      <span class="nav-icon">📝</span> Writeup
+    </div>
+  </nav>
+
+  <!-- ══════════════ MAIN CONTENT ══════════════ -->
+  <main class="content">
+
+    <!-- ═════ PAGE: MACHINES ═════ -->
+    <section class="page active" id="page-machines">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-val" id="stat-total">0</div><div class="stat-lbl">Total</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--amber)" id="stat-active">0</div><div class="stat-lbl">In Progress</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--green)" id="stat-rooted">0</div><div class="stat-lbl">Rooted</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--text2)" id="stat-retired">0</div><div class="stat-lbl">Retired</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title"><em>+</em> Add Machine</span></div>
+        <div class="g3">
+          <div><label>Machine Name</label><input id="m-name" placeholder="e.g. Lame"/></div>
+          <div><label>IP Address</label><input id="m-ip" placeholder="10.10.10.3" style="font-family:var(--mono)"/></div>
+          <div><label>OS</label>
+            <select id="m-os">
+              <option value="🐧">🐧  Linux</option>
+              <option value="🪟">🪟  Windows</option>
+              <option value="🍎">🍎  macOS</option>
+              <option value="❓">❓  Unknown</option>
+            </select>
+          </div>
+        </div>
+        <div class="g3 mt">
+          <div><label>Difficulty</label>
+            <select id="m-diff">
+              <option>Easy</option><option>Medium</option><option>Hard</option><option>Insane</option>
+            </select>
+          </div>
+          <div><label>Status</label>
+            <select id="m-status">
+              <option>In Progress</option><option>Rooted</option><option>Retired</option><option>Todo</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:flex-end">
+            <button id="btn-add-machine" class="btn btn-green" style="width:100%">Add Machine</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">Machine List</div>
+      <div id="machine-list" style="display:flex;flex-direction:column;gap:8px"></div>
+      <div class="empty" id="machine-empty" style="display:none">No machines added yet.</div>
+    </section>
+
+    <!-- ═════ PAGE: RECON ═════ -->
+    <section class="page" id="page-recon">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Target: <em id="recon-target-name">None</em></span>
+          <span class="badge ba" style="font-family:var(--mono);font-size:11px" id="recon-target-ip-badge">—</span>
+        </div>
+        <div class="g2">
+          <div><label>Select Machine</label>
+            <select id="recon-machine-select"><option value="">— Select a machine —</option></select>
+          </div>
+          <div><label>MITRE ATT&amp;CK Technique</label>
+            <select id="recon-mitre">
+              <option value="">Select technique...</option>
+              <option>T1190 – Exploit Public-Facing App</option>
+              <option>T1059 – Command & Script Interpreter</option>
+              <option>T1078 – Valid Accounts</option>
+              <option>T1083 – File & Dir Discovery</option>
+              <option>T1003 – OS Credential Dump</option>
+              <option>T1548 – Abuse Elevation Control</option>
+              <option>T1055 – Process Injection</option>
+              <option>T1021 – Remote Services</option>
+              <option>T1071 – App Layer Protocol</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="g2">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Open <em>Ports</em></span>
+            <button id="btn-add-port" class="btn btn-ghost btn-sm">+ Port</button>
+          </div>
+          <div id="port-list"><div class="empty">No ports recorded.</div></div>
+        </div>
+
+        <div class="card">
+          <div class="sec">Quick Enum Commands</div>
+          <div class="flex-wrap">
+            <button class="btn btn-ghost btn-sm" onclick="Recon.insertCmd('nmap -sCV -p- <target> -oN nmap/full.txt')">NMAP FULL</button>
+            <button class="btn btn-ghost btn-sm" onclick="Recon.insertCmd('nmap -sU --top-ports 20 <target>')">NMAP UDP</button>
+            <button class="btn btn-ghost btn-sm" onclick="Recon.insertCmd('gobuster dir -u http://<target> -w /usr/share/seclists/Discovery/Web-Content/common.txt')">GOBUSTER</button>
+            <button class="btn btn-ghost btn-sm" onclick="Recon.insertCmd('feroxbuster -u http://<target>')">FEROXBUSTER</button>
+            <button class="btn btn-ghost btn-sm" onclick="Recon.insertCmd('ffuf -u http://<target>/FUZZ -w /usr/share/seclists/Discovery/Web-Content/common.txt -fc 404')">FFUF</button>
+            <button class="btn btn-ghost btn-sm" onclick="Recon.insertCmd('smbclient -L \\\\<target>\\ -N')">SMB LIST</button>
+            <button class="btn btn-ghost btn-sm" onclick="Recon.insertCmd('smbmap -H <target>')">SMBMAP</button>
+            <button class="btn btn-ghost btn-sm" onclick="Recon.insertCmd('nxc smb <target> --generate-hosts-file hosts.txt')">GEN HOSTS</button>
+            <button class="btn btn-ghost btn-sm" onclick="Recon.insertCmd('nuclei -u http://<target>:80/')">NUCLEI</button>
+            <button class="btn btn-ghost btn-sm" onclick="Recon.insertCmd('whatweb http://<target>')">WHATWEB</button>
+            <button class="btn btn-ghost btn-sm" onclick="Recon.insertCmd('curl -s http://<target>/robots.txt')">ROBOTS.TXT</button>
+            <button class="btn btn-ghost btn-sm" onclick="Recon.insertCmd('ldapsearch -x -H ldap://<target> -b \'dc=domain,dc=local\'')">LDAP ENUM</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Recon <em>Notes</em></span>
+          <button id="btn-save-notes" class="btn btn-green btn-sm">Save</button>
+        </div>
+        <textarea id="recon-notes" rows="12" placeholder="# Notes&#10;&#10;## Foothold&#10;...&#10;&#10;## Privesc&#10;..."></textarea>
+      </div>
+    </section>
+
+    <!-- ═════ PAGE: PAYLOADS ═════ -->
+    <section class="page" id="page-payloads">
+      <div class="card" style="padding:12px 16px">
+        <div class="payload-config">
+          <div><label>LHOST (your IP)</label><input id="lhost" placeholder="10.10.14.1" style="font-family:var(--mono)"/></div>
+          <div><label>LPORT</label><input id="lport" placeholder="4444" style="font-family:var(--mono)"/></div>
+          <div><label>RHOST (target)</label><input id="rhost" placeholder="10.10.10.3" style="font-family:var(--mono)"/></div>
+          <div style="display:flex;align-items:flex-end">
+            <button class="btn btn-ghost" onclick="document.getElementById('lhost').value='';document.getElementById('lport').value='';document.getElementById('rhost').value=''">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="payload-shell">
+        <div class="payload-sidebar" id="payload-list"></div>
+        <div class="payload-main">
+          <div>
+            <div class="sec">Generated Payload</div>
+            <div style="position:relative">
+              <div class="codeblock" id="payload-output">← Select a payload from the list.</div>
+              <button id="btn-copy-payload" class="copy-btn">COPY</button>
+            </div>
+          </div>
+          <div>
+            <div class="sec">Encoder / Decoder</div>
+            <div class="encode-row">
+              <button class="btn btn-ghost btn-sm" onclick="Payloads.encode('b64')">Base64</button>
+              <button class="btn btn-ghost btn-sm" onclick="Payloads.encode('url')">URL Encode</button>
+              <button class="btn btn-ghost btn-sm" onclick="Payloads.encode('url2')">Double URL</button>
+              <button class="btn btn-ghost btn-sm" onclick="Payloads.encode('hex')">Hex</button>
+              <span style="color:var(--text3);font-size:12px">|</span>
+              <button class="btn btn-ghost btn-sm" onclick="Payloads.decode('b64')">Decode B64</button>
+              <button class="btn btn-ghost btn-sm" onclick="Payloads.decode('url')">Decode URL</button>
+            </div>
+          </div>
+          <div>
+            <div class="sec">Encoded Output</div>
+            <div style="position:relative">
+              <div class="codeblock" id="encoded-output" style="color:var(--amber);min-height:60px">Select an encoder above.</div>
+              <button id="btn-copy-encoded" class="copy-btn">COPY</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════ PAGE: LOOT VAULT ═════ -->
+    <section class="page" id="page-loot">
+      <div class="card">
+        <div class="card-header"><span class="card-title"><em>+</em> Add Loot</span></div>
+        <div class="g3">
+          <div><label>Type</label>
+            <select id="l-type">
+              <option value="FLAG">🚩 Flag</option>
+              <option value="CRED">🔑 Credential</option>
+              <option value="HASH">🔒 Hash</option>
+              <option value="FILE">📄 File Path</option>
+              <option value="SECRET">🔐 Secret / Key</option>
+              <option value="NOTE">📝 Note</option>
+            </select>
+          </div>
+          <div><label>Machine</label>
+            <select id="l-machine"><option value="General">General</option></select>
+          </div>
+          <div><label>Description</label><input id="l-desc" placeholder="e.g. user.txt, SSH password"/></div>
+        </div>
+        <div class="mt"><label>Value</label><input id="l-value" placeholder="Paste value here" style="font-family:var(--mono)"/></div>
+        <div class="flex flex-end mt">
+          <button id="btn-add-loot" class="btn btn-green">Save to Vault</button>
+        </div>
+      </div>
+
+      <div class="flex mb" style="gap:6px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm loot-filter-btn active-filter" data-f="ALL">ALL</button>
+        <button class="btn btn-ghost btn-sm loot-filter-btn" data-f="FLAG">🚩 FLAGS</button>
+        <button class="btn btn-ghost btn-sm loot-filter-btn" data-f="CRED">🔑 CREDS</button>
+        <button class="btn btn-ghost btn-sm loot-filter-btn" data-f="HASH">🔒 HASHES</button>
+        <button class="btn btn-ghost btn-sm loot-filter-btn" data-f="FILE">📄 FILES</button>
+        <button class="btn btn-ghost btn-sm loot-filter-btn" data-f="SECRET">🔐 SECRETS</button>
+        <button class="btn btn-ghost btn-sm loot-filter-btn" data-f="NOTE">📝 NOTES</button>
+      </div>
+      <div id="loot-list"></div>
+    </section>
+
+    <!-- ═════ PAGE: NETWORK MAP ═════ -->
+    <section class="page" id="page-netmap">
+      <div class="g2">
+        <div style="display:flex;flex-direction:column;gap:10px;grid-column:1/-1">
+          <div class="map-toolbar">
+            <button class="btn btn-green btn-sm" id="btn-add-network">+ Network</button>
+            <button class="btn btn-ghost btn-sm" id="btn-add-map-node">+ Node</button>
+            <button class="btn btn-ghost btn-sm" id="btn-add-edge">+ Edge</button>
+            <button class="btn btn-ghost btn-sm" id="btn-map-import">Import Machines</button>
+            <button class="btn btn-ghost btn-sm" id="btn-map-snap" title="Toggle snap-to-grid">⊞ Snap</button>
+            <span style="flex:1"></span>
+            <input class="map-search" id="map-node-search" placeholder="Search nodes…"/>
+            <button class="btn btn-ghost btn-sm" id="btn-map-reset" title="Ctrl+0">Reset View</button>
+          </div>
+
+          <div style="position:relative">
+            <canvas id="map-canvas"></canvas>
+            <div class="node-tooltip" id="node-tooltip"></div>
+            <div class="map-minimap">
+              <canvas id="map-minimap-canvas" width="130" height="90"></canvas>
+            </div>
+          </div>
+
+          <div class="map-legend">
+            <span style="color:var(--text3);font-family:var(--mono);font-size:10px;letter-spacing:.1em;margin-right:4px">STATUS:</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#00ff99"></span>Rooted</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#ffb300"></span>In Progress</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#4da6ff"></span>Discovered</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#a855f7"></span>Pivot/Gateway</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#3e4e62"></span>Unknown</span>
+            <span style="margin-left:12px;color:var(--text3);font-family:var(--mono);font-size:10px">scroll=zoom · drag=pan · dbl-click=edit · right-click=menu · Del=delete</span>
+          </div>
+
+          <!-- Node detail panel -->
+          <div id="node-detail-panel" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;flex-direction:column;gap:12px">
+            <div class="flex" style="justify-content:space-between">
+              <div>
+                <div style="font-family:var(--mono);font-size:15px;color:var(--green)" id="node-detail-name"></div>
+                <div style="font-family:var(--mono);font-size:12px;color:var(--blue)" id="node-detail-ip"></div>
+              </div>
+              <div class="flex gap">
+                <button id="btn-node-delete" class="btn btn-red btn-sm">Delete Node</button>
+                <button class="btn btn-ghost btn-sm" onclick="document.getElementById('node-detail-panel').style.display='none'">Close</button>
+              </div>
+            </div>
+            <div class="g2">
+              <div><label>Status</label>
+                <select id="node-status-select">
+                  <option>Discovered</option><option>In Progress</option>
+                  <option>Compromised</option><option>Rooted</option>
+                  <option>Unknown</option><option>Gateway</option><option>Pivot</option>
+                </select>
+              </div>
+              <div>
+                <label>Add Flag</label>
+                <div class="flex">
+                  <input id="node-flag-input" placeholder="Paste flag value" style="font-family:var(--mono)"/>
+                  <button id="btn-node-flag" class="btn btn-green btn-sm" style="white-space:nowrap">+ Flag</button>
+                </div>
+              </div>
+            </div>
+            <div id="node-flags-list"></div>
+            <div>
+              <label>Node Notes</label>
+              <textarea id="node-notes-ta" rows="3" placeholder="Attack path, credentials, notes..."></textarea>
+            </div>
+          </div>
+
+          <!-- Network list -->
+          <div class="card">
+            <div class="card-header"><span class="card-title">Defined <em>Networks</em></span></div>
+            <div id="network-list" style="display:flex;flex-direction:column;gap:6px"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════ PAGE: WRITEUP ═════ -->
+    <section class="page" id="page-writeup">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Writeup <em>Builder</em></span>
+          <div class="flex gap">
+            <button id="btn-gen-writeup" class="btn btn-ghost btn-sm">Generate Template</button>
+            <button id="btn-copy-writeup" class="btn btn-green btn-sm">Copy Markdown</button>
+          </div>
+        </div>
+        <div class="g2 mb">
+          <div><label>Machine</label>
+            <select id="writeup-machine"><option value="">— Select —</option></select>
+          </div>
+        </div>
+        <textarea class="writeup-area" id="writeup-area" rows="22"># Select a machine and click Generate Template</textarea>
+      </div>
+    </section>
+
+  </main>
+</div><!-- /shell -->
+
+<!-- ══════════════ MODALS ══════════════ -->
+
+<!-- Add Port -->
+<div class="modal-backdrop" id="port-modal">
+  <div class="modal">
+    <div class="modal-title">Add Open Port</div>
+    <div class="g2">
+      <div><label>Port</label><input id="p-port" placeholder="80" style="font-family:var(--mono)"/></div>
+      <div><label>Protocol</label><select id="p-proto"><option>TCP</option><option>UDP</option></select></div>
+    </div>
+    <div class="mt"><label>Service</label><input id="p-service" placeholder="http / smb / ssh"/></div>
+    <div class="mt"><label>Version / Banner</label><input id="p-version" placeholder="Apache httpd 2.4.41"/></div>
+    <div class="flex flex-end mt gap">
+      <button id="btn-cancel-port" class="btn btn-ghost">Cancel</button>
+      <button id="btn-confirm-port" class="btn btn-green">Add Port</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Network -->
+<div class="modal-backdrop" id="network-modal">
+  <div class="modal">
+    <div class="modal-title">Add Network Subnet</div>
+    <div><label>CIDR</label><input id="net-cidr" placeholder="10.10.110.0/24" style="font-family:var(--mono)"/></div>
+    <div class="mt"><label>Label / Name</label><input id="net-label" placeholder="Corp LAN, DMZ, ..."/></div>
+    <div class="mt"><label>Color</label>
+      <select id="net-color">
+        <option value="#4da6ff">Blue — External / Internet</option>
+        <option value="#00ff99">Green — Compromised zone</option>
+        <option value="#ffb300">Amber — Active zone</option>
+        <option value="#a855f7">Purple — Internal / AD</option>
+        <option value="#ff4d4d">Red — Restricted / Secure</option>
+        <option value="#22d3ee">Cyan — DMZ / Pivot</option>
+      </select>
+    </div>
+    <div class="flex flex-end mt gap">
+      <button id="btn-cancel-network" class="btn btn-ghost">Cancel</button>
+      <button id="btn-confirm-network" class="btn btn-green">Add Network</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Map Node -->
+<div class="modal-backdrop" id="mapnode-modal">
+  <div class="modal">
+    <div class="modal-title">Add Node to Map</div>
+    <div class="g2">
+      <div><label>Label / Hostname</label><input id="mapnode-label" placeholder="DC01"/></div>
+      <div><label>IP Address</label><input id="mapnode-ip" placeholder="10.10.110.5" style="font-family:var(--mono)"/></div>
+    </div>
+    <div class="g2 mt">
+      <div><label>OS</label>
+        <select id="mapnode-os">
+          <option value="🐧">🐧 Linux</option>
+          <option value="🪟">🪟 Windows</option>
+          <option value="🔀">🔀 Router / Firewall</option>
+          <option value="🌐">🌐 Web App</option>
+          <option value="❓">❓ Unknown</option>
+        </select>
+      </div>
+      <div><label>Initial Status</label>
+        <select id="mapnode-status">
+          <option>Discovered</option><option>In Progress</option><option>Compromised</option>
+          <option>Rooted</option><option>Unknown</option><option>Gateway</option><option>Pivot</option>
+        </select>
+      </div>
+    </div>
+    <div class="mt"><label>Subnet</label><select id="mapnode-subnet"><option value="">None</option></select></div>
+    <div class="flex flex-end mt gap">
+      <button id="btn-cancel-mapnode" class="btn btn-ghost">Cancel</button>
+      <button id="btn-confirm-mapnode" class="btn btn-green">Add Node</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Edge -->
+<div class="modal-backdrop" id="edge-modal">
+  <div class="modal">
+    <div class="modal-title">Add Connection</div>
+    <div><label>From Node</label><select id="edge-from"></select></div>
+    <div class="mt"><label>To Node</label><select id="edge-to"></select></div>
+    <div class="mt"><label>Label (optional)</label><input id="edge-label" placeholder="e.g. pivot, tunnel"/></div>
+    <div class="mt"><label>Type</label>
+      <select id="edge-type">
+        <option value="default">Network Link</option>
+        <option value="pivot">Pivot Path</option>
+        <option value="tunnel">Tunnel / VPN</option>
+        <option value="lateral">Lateral Movement</option>
+      </select>
+    </div>
+    <div class="flex flex-end mt gap">
+      <button id="btn-cancel-edge" class="btn btn-ghost">Cancel</button>
+      <button id="btn-confirm-edge" class="btn btn-green">Add Edge</button>
+    </div>
+  </div>
+</div>
+
+<!-- Right-click context menu for map nodes -->
+<div class="map-ctx-menu" id="map-ctx-menu">
+  <div class="ctx-item" id="ctx-edit-node">✏ Edit Node</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" id="ctx-set-rooted">✓ Mark Rooted</div>
+  <div class="ctx-item" id="ctx-set-progress">… Mark In Progress</div>
+  <div class="ctx-item" id="ctx-set-pivot">⬡ Mark as Pivot</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item danger" id="ctx-del-node">✕ Delete Node</div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
