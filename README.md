@@ -17,6 +17,9 @@
 </div>
 
 ---
+A self-hosted dashboard for managing HackTheBox penetration testing sessions.
+Track machines, log open ports, store credentials and flags, generate reverse
+shell payloads, visualize network topology, and export markdown writeups 
 
 ## Setup
 
@@ -33,7 +36,7 @@ Open **http://localhost:5000**
 docker compose down
 ```
 
----
+
 
 ## Features
 
@@ -47,8 +50,6 @@ docker compose down
 | **Writeup** | Auto-generate markdown writeup templates from session data |
 
 
-
----
 
 ## Data Persistence
 
