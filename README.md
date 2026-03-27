@@ -18,7 +18,7 @@
 
 ---
 
-## ⚡ Quick Start
+## Setup
 
 ```bash
 git clone https://github.com/yourusername/htb-dashboard.git
@@ -26,7 +26,7 @@ cd htb-dashboard
 docker compose up -d
 ```
 
-Open **http://localhost:5000** — done.
+Open **http://localhost:5000** 
 
 ```bash
 # Stop
@@ -35,67 +35,22 @@ docker compose down
 
 ---
 
-## 🗂️ Project Structure
-
-```
-htb-dashboard/
-├── app.py                  ← Flask server
-├── requirements.txt
-├── templates/
-│   └── index.html          ← HTML structure
-├── static/
-│   ├── style.css           ← All styles + theme variables
-│   └── app.js              ← All frontend logic
-├── Dockerfile              ← python:alpine + flask
-├── docker-compose.yml
-└── .dockerignore
-```
-
----
-
-## 🐍 Running without Docker
-
-```bash
-pip install -r requirements.txt
-python app.py
-```
-
-Open **http://localhost:5000**.
-
----
-
-## 🗺️ Features
+## Features
 
 | Module | Description |
 |---|---|
-| **⬡ Machines** | Track HTB machines — IP, OS, difficulty, status |
-| **🔍 Recon** | Log open ports and services per machine |
-| **⚡ Payloads** | Reverse shells, web shells, MSF — auto-filled with LHOST/LPORT |
-| **🗄 Loot Vault** | Flags, credentials, hashes, secrets with one-click copy |
-| **🗺 Net Map** | Interactive network topology canvas with drag, zoom & minimap |
-| **📝 Writeup** | Auto-generate markdown writeup templates from session data |
+| **Machines** | HTB machines tracker|
+| **Recon** | Log open ports and services per machine |
+| **Payloads** | Reverse shells, web shells, msfvenom|
+| **Loot Vault** | Flags, credentials, hashes |
+| **Net Map** | Interactive network topology canvas|
+| **Writeup** | Auto-generate markdown writeup templates from session data |
+
+
 
 ---
 
-## 🔌 Adding API Routes
-
-`app.py` is ready for backend routes whenever you need them:
-
-```python
-@app.route('/api/export')
-def export_session():
-    # Future: export session as JSON file
-    pass
-
-@app.route('/api/import/nmap', methods=['POST'])
-def import_nmap():
-    # Future: parse nmap XML and populate ports
-    pass
-```
-
----
-
-## 💾 Data Persistence
+## Data Persistence
 
 All data is stored in **browser `localStorage`** — nothing leaves your machine.
 
@@ -107,18 +62,12 @@ copy(localStorage.getItem('htb_v2'))
 localStorage.setItem('htb_v2', '<paste json>')
 ```
 
----
 
-## ⚠️ Disclaimer
 
-For **legal, authorized** penetration testing only — CTFs, HackTheBox, TryHackMe, and similar platforms.
 
----
-
-## 📄 License
+## License
 
 MIT
 
----
 
 <div align="center"><sub>Built for the grind. ⬡</sub></div>
