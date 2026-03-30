@@ -3,21 +3,20 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>HTB Dashboard</title>
+  <title>pwndeck</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
 </head>
 <body>
 
 <div class="shell">
 
-  <!-- ══════════════ TOP BAR ══════════════ -->
   <header class="topbar">
     <div class="logo">
       <div class="logo-hex">
         <svg viewBox="0 0 16 16"><path d="M8 0L15 4V12L8 16L1 12V4L8 0ZM8 2.5L3 5.5V10.5L8 13.5L13 10.5V5.5L8 2.5Z"/></svg>
       </div>
       <div>
-        <div class="logo-text">HTB//DASHBOARD</div>
+        <div class="logo-text">PWNDECK</div>
         <div class="logo-sub">PENTESTER WORKSTATION</div>
       </div>
     </div>
@@ -35,7 +34,6 @@
     </div>
   </header>
 
-  <!-- ══════════════ SIDEBAR ══════════════ -->
   <nav class="sidebar">
     <div class="sidebar-section">Workspace</div>
     <div class="nav-item active" data-page="machines">
@@ -62,11 +60,9 @@
     </div>
   </nav>
 
-  <!-- ══════════════ MAIN CONTENT ══════════════ -->
   <main class="content">
 
-    <!-- ═════ PAGE: MACHINES ═════ -->
-    <section class="page active" id="page-machines">
+      <section class="page active" id="page-machines">
       <div class="stats-row">
         <div class="stat-card"><div class="stat-val" id="stat-total">0</div><div class="stat-lbl">Total</div></div>
         <div class="stat-card"><div class="stat-val" style="color:var(--amber)" id="stat-active">0</div><div class="stat-lbl">In Progress</div></div>
@@ -110,8 +106,7 @@
       <div class="empty" id="machine-empty" style="display:none">No machines added yet.</div>
     </section>
 
-    <!-- ═════ PAGE: RECON ═════ -->
-    <section class="page" id="page-recon">
+      <section class="page" id="page-recon">
       <div class="card">
         <div class="card-header">
           <span class="card-title">Target: <em id="recon-target-name">None</em></span>
@@ -175,8 +170,7 @@
       </div>
     </section>
 
-    <!-- ═════ PAGE: PAYLOADS ═════ -->
-    <section class="page" id="page-payloads">
+      <section class="page" id="page-payloads">
       <div class="card" style="padding:12px 16px">
         <div class="payload-config">
           <div><label>LHOST (your IP)</label><input id="lhost" placeholder="10.10.14.1" style="font-family:var(--mono)"/></div>
@@ -221,8 +215,7 @@
       </div>
     </section>
 
-    <!-- ═════ PAGE: LOOT VAULT ═════ -->
-    <section class="page" id="page-loot">
+      <section class="page" id="page-loot">
       <div class="card">
         <div class="card-header"><span class="card-title"><em>+</em> Add Loot</span></div>
         <div class="g3">
@@ -259,8 +252,7 @@
       <div id="loot-list"></div>
     </section>
 
-    <!-- ═════ PAGE: NETWORK MAP ═════ -->
-    <section class="page" id="page-netmap">
+      <section class="page" id="page-netmap">
       <div class="g2">
         <div style="display:flex;flex-direction:column;gap:10px;grid-column:1/-1">
           <div class="map-toolbar">
@@ -292,7 +284,6 @@
             <span style="margin-left:12px;color:var(--text3);font-family:var(--mono);font-size:10px">scroll=zoom · drag=pan · dbl-click=edit · right-click=menu · Del=delete</span>
           </div>
 
-          <!-- Node detail panel -->
           <div id="node-detail-panel" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;flex-direction:column;gap:12px">
             <div class="flex" style="justify-content:space-between">
               <div>
@@ -327,7 +318,6 @@
             </div>
           </div>
 
-          <!-- Network list -->
           <div class="card">
             <div class="card-header"><span class="card-title">Defined <em>Networks</em></span></div>
             <div id="network-list" style="display:flex;flex-direction:column;gap:6px"></div>
@@ -336,8 +326,7 @@
       </div>
     </section>
 
-    <!-- ═════ PAGE: WRITEUP ═════ -->
-    <section class="page" id="page-writeup">
+      <section class="page" id="page-writeup">
       <div class="card">
         <div class="card-header">
           <span class="card-title">Writeup <em>Builder</em></span>
@@ -356,11 +345,8 @@
     </section>
 
   </main>
-</div><!-- /shell -->
+</div>
 
-<!-- ══════════════ MODALS ══════════════ -->
-
-<!-- Add Port -->
 <div class="modal-backdrop" id="port-modal">
   <div class="modal">
     <div class="modal-title">Add Open Port</div>
@@ -377,7 +363,6 @@
   </div>
 </div>
 
-<!-- Add Network -->
 <div class="modal-backdrop" id="network-modal">
   <div class="modal">
     <div class="modal-title">Add Network Subnet</div>
@@ -400,7 +385,6 @@
   </div>
 </div>
 
-<!-- Add Map Node -->
 <div class="modal-backdrop" id="mapnode-modal">
   <div class="modal">
     <div class="modal-title">Add Node to Map</div>
@@ -433,7 +417,6 @@
   </div>
 </div>
 
-<!-- Add Edge -->
 <div class="modal-backdrop" id="edge-modal">
   <div class="modal">
     <div class="modal-title">Add Connection</div>
@@ -455,7 +438,6 @@
   </div>
 </div>
 
-<!-- Right-click context menu for map nodes -->
 <div class="map-ctx-menu" id="map-ctx-menu">
   <div class="ctx-item" id="ctx-edit-node">✏ Edit Node</div>
   <div class="ctx-sep"></div>
@@ -466,7 +448,6 @@
   <div class="ctx-item danger" id="ctx-del-node">✕ Delete Node</div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script src="{{ url_for('static', filename='app.js') }}"></script>
